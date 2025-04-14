@@ -1,64 +1,34 @@
-
-🌟𝗠𝗬 𝗔𝗩𝗔𝗜𝗟 𝗖𝗠𝗗 𝗟𝗜𝗦𝗧🌟
-
-	1. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫hi💟 
-	2. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫sim💟
-   3.    ╚═❯❯ !
-╔═➳➳➳➳➳⋇⊶┫info💟 
-	4. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫active-session💟 
-	5. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫adduser💟 
-	6. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫ai💟 
-	7. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫anime💟 
-	8. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫blackbox💟 
-	9. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫dictionary💟 
-	10. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫bot💟 
-	11. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫cmd💟 
-	12. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫createfb💟 
-	13. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫emojimix💟 
-	14. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫rules💟 
-	15. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫fbcoverv2💟 
-	16. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫file💟 
-	17. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫flux💟 
-	18. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫fun💟 
-	19. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫goiadminn💟 
-	20. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫help💟 
-	21. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫hercai💟 
-
-👀Event List:🆔
-
-	1. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫auto☀️
-	2. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫welcomenoti☀️
-	3. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫antiout☀️
-	4. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫autopost☀️
-	5. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫resend☀️
-	6. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫soyeon☀️
-	7. ╚═❯❯ ! 
-╔═➳➳➳➳➳⋇⊶┫waifu-bot☀️
-
-Page 1/3. To view the next page, type '!help page number'. To view information about a specific command, type '!help command name'.
+    av: api.getCurrentUserID(),
+    fb_api_req_friendly_name:
+      "FriendingCometFriendRequestsRootQueryRelayPreloader",
+    fb_api_caller_class: "RelayModern",
+    doc_id: "4499164963466303",
+    variables: JSON.stringify({ input: { scale: 3 } }),
+  };
+  const listRequest = JSON.parse(
+    await api.httpPost("https://www.facebook.com/api/graphql/", form)
+  ).data.viewer.friending_possibilities.edges;
+  let msg = "";
+  let i = 0;
+  for (const user of listRequest) {
+    i++;
+    msg += `\n${i}. Name: ${user.node.name}
+        + \nID: ${user.node.id}
+        + \nUrl: ${user.node.url.replace("www.facebook", "fb")}
+        + \nTime: ${moment(user.time * 1009)
+          .tz("Asia/Manila")
+          .format("DD/MM/YYYY HH:mm:ss")}\n`;
+  }
+  const info = await output.reply(
+    `${msg}\nReply to this message with content: <add | del> <comparison | or "all"> to take action`
+  );
+  input.setReply(info.messageID, {
+    messageID: info.messageID,
+    listRequest,
+    author: event.senderID,
+    unsendTimeout: setTimeout(() => {
+      api.unsendMessage(info.messageID);
+    }, 60 * 1000),
+    callback: onReply,
+  });
+}
